@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-  push:
     tags:
       - qa-v*
       - prod-v*
