@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app-prod
+  labels:
+    app: python-app-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: python-app-prod
+  template:
+    metadata:
+      labels:
+        app: python-app-prod
+    spec:
+      containers:
+        - name: python-app
+          image: maheel/python-cicd:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ENVIRONMENT
+              value: prod
