@@ -24,7 +24,7 @@ jobs:
 
       - name: Build & Push Image
         run: |
-          docker build -t maheel/python-cicd:${{ github.sha }} ./app
-          docker tag maheel/python-cicd:${{ github.sha }} maheel/python-cicd:latest
-          docker push maheel/python-cicd:${{ github.sha }}
-          docker push maheel/python-cicd:latest
+          docker build -t maheellakshan/python-cicd:${{ github.sha }} ./app
+          docker tag maheellakshan/python-cicd:${{ github.sha }} maheellakshan/python-cicd:latest
+          docker push maheellakshan/python-cicd:${{ github.sha }}
+          docker push maheellakshan/python-cicd:latest
