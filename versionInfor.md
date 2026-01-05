@@ -1,3 +1,3 @@
 DEV:3.4.1
-QA
-PROD
+QA 3.4.1
+PROD 3.4.1
