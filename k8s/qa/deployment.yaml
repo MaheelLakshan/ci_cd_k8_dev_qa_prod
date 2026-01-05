@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: maheellakshan/python-cicd:2.1.0-rc-qa
+          image: maheellakshan/python-cicd:2.2.0-rc-qa
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -23,4 +23,4 @@ spec:
             - name: ENVIRONMENT
               value: "qa"
             - name: VERSION
-              value: "2.1.0" # VERSION
+              value: "2.2.0" # VERSION
