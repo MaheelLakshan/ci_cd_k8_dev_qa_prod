@@ -58,7 +58,7 @@ jobs:
 
       - name: Build and Push
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.docker_tag }} .
+          docker build -t ${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.docker_tag }} ./app
           docker push ${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.docker_tag }}
 
   update-manifest:
