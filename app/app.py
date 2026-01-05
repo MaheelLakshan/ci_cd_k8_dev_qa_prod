@@ -13,7 +13,7 @@ def home():
     return f"""
     <html>
     <head>
-        <title>Demo - {env}</title>
+        <title>Demo Check- {env}</title>
         <style>
             body {{
                 font-family: Arial, sans-serif;
