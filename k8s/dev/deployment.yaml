@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-app-dev
+  namespace: development
 spec:
   replicas: 1
   selector:
@@ -14,10 +15,12 @@ spec:
     spec:
       containers:
         - name: app
-          image: maheellakshan/python-cicd:e61e4459a99ac914bc1a7083dd12c55dd91033f3
+          image: maheellakshan/python-cicd:dev-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:
             - name: ENVIRONMENT
-              value: dev
+              value: "dev"
+            - name: VERSION
+              value: "0.0.0"
