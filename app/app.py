@@ -13,7 +13,7 @@ def home():
     return f"""
     <html>
     <head>
-        <title>CI/CD Demo - {env}</title>
+        <title>Demo - {env}</title>
         <style>
             body {{
                 font-family: Arial, sans-serif;
