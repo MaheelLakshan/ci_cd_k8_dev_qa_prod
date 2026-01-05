@@ -13,7 +13,7 @@ def home():
     return f"""
     <html>
     <head>
-        <title>Demo Check- {env}</title>
+        <title>Demo - {env}</title>
         <style>
             body {{
                 font-family: Arial, sans-serif;
@@ -54,7 +54,7 @@ def home():
     </head>
     <body>
         <div class="container">
-            <h1>CI/CD Pipeline Demo</h1>
+            <h1>CI/CD Pipeline H20</h1>
             <div class="env {env}">{env.upper()} Environment</div>
             <div class="info">
                 <p><strong>Version:</strong> {version}</p>
