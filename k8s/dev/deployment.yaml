@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: maheellakshan/python-cicd:dev-a567fcb
+          image: maheellakshan/python-cicd:dev-640c12f
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
