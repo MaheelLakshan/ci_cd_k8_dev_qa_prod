@@ -33,12 +33,10 @@ jobs:
         id: check
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
-          if [[ "$COMMIT_MSG" == *"[skip ci]"* ]] || [[ "$COMMIT_MSG" == *"Update"*"to"* ]]; then
+          if [[ "$GITHUB_REF" != refs/tags/* ]] && [[ "$COMMIT_MSG" == *"[skip ci]"* ]]; then
             echo "should_skip=true" >> $GITHUB_OUTPUT
-            echo "Skipping: Commit is from GitHub Actions"
           else
             echo "should_skip=false" >> $GITHUB_OUTPUT
-            echo "Processing: User commit detected"
           fi
 
       - name: Extract info
