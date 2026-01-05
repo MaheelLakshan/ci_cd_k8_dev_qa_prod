@@ -2,10 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-app-prod
-  labels:
-    app: python-app-prod
+  namespace: production
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: python-app-prod
@@ -15,11 +14,13 @@ spec:
         app: python-app-prod
     spec:
       containers:
-        - name: python-app
-          image: maheellakshan/python-cicd:latest
+        - name: app
+          image: maheellakshan/python-cicd:prod-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:
             - name: ENVIRONMENT
-              value: prod
+              value: "prod"
+            - name: VERSION
+              value: "0.0.0" # VERSION

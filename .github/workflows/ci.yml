@@ -1,29 +1,99 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - develop
     tags:
-      - qa-v*
-      - prod-v*
+      - "[0-9]+.[0-9]+.[0-9]+-rc-*"
+
+env:
+  IMAGE_NAME: maheellakshan/python-cicd
 
 jobs:
-  build-and-push:
+  metadata:
+    name: Extract Metadata
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.info.outputs.version }}
+      environment: ${{ steps.info.outputs.environment }}
+      docker_tag: ${{ steps.info.outputs.docker_tag }}
 
     steps:
-      - name: Checkout code
+      - name: Extract info
+        id: info
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            # Tag: 1.0.0-rc-qa
+            TAG=${GITHUB_REF#refs/tags/}
+            VERSION=$(echo $TAG | sed -E 's/(.*)-rc-.*/\1/')
+            ENV=$(echo $TAG | sed -E 's/.*-rc-(.*)/\1/')
+            
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "environment=$ENV" >> $GITHUB_OUTPUT
+            echo "docker_tag=$TAG" >> $GITHUB_OUTPUT
+          else
+            # Branch: develop
+            SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+            
+            echo "version=0.0.0" >> $GITHUB_OUTPUT
+            echo "environment=dev" >> $GITHUB_OUTPUT
+            echo "docker_tag=dev-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    needs: metadata
+
+    steps:
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build & Push Image
+      - name: Build and Push
         run: |
-          docker build -t maheellakshan/python-cicd:${{ github.sha }} ./app
-          docker tag maheellakshan/python-cicd:${{ github.sha }} maheellakshan/python-cicd:latest
-          docker push maheellakshan/python-cicd:latest
+          docker build -t ${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.docker_tag }} .
+          docker push ${{ env.IMAGE_NAME }}:${{ needs.metadata.outputs.docker_tag }}
+
+  update-manifest:
+    name: Update K8s Manifest
+    runs-on: ubuntu-latest
+    needs: [metadata, build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update deployment
+        run: |
+          ENV=${{ needs.metadata.outputs.environment }}
+          TAG=${{ needs.metadata.outputs.docker_tag }}
+          VER=${{ needs.metadata.outputs.version }}
+
+          sed -i "s|image: maheellakshan/python-cicd:.*|image: maheellakshan/python-cicd:${TAG}|g" k8s/${ENV}/deployment.yaml
+          sed -i "s|value: \".*\" # VERSION|value: \"${VER}\" # VERSION|g" k8s/${ENV}/deployment.yaml
+
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          git add k8s/${{ needs.metadata.outputs.environment }}/
+
+          if ! git diff --staged --quiet; then
+            git commit -m "Update ${{ needs.metadata.outputs.environment }} to ${{ needs.metadata.outputs.docker_tag }}"
+            
+            if [[ "${{ needs.metadata.outputs.environment }}" == "dev" ]]; then
+              git push origin HEAD:develop
+            else
+              git push origin HEAD:main
+            fi
+          fi
