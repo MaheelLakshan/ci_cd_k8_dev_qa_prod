@@ -54,7 +54,7 @@ def home():
     </head>
     <body>
         <div class="container">
-            <h1>CI/CD Pipeline H20</h1>
+            <h1>CI/CD Pipeline demo</h1>
             <div class="env {env}">{env.upper()} Environment</div>
             <div class="info">
                 <p><strong>Version:</strong> {version}</p>
