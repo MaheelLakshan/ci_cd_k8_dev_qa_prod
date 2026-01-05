@@ -2,10 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-app-qa
-  labels:
-    app: python-app-qa
+  namespace: qa
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: python-app-qa
@@ -15,11 +14,13 @@ spec:
         app: python-app-qa
     spec:
       containers:
-        - name: python-app
-          image: maheel/python-cicd:latest
+        - name: app
+          image: maheellakshan/python-cicd:qa-latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:
             - name: ENVIRONMENT
-              value: qa
+              value: "qa"
+            - name: VERSION
+              value: "0.0.0" # VERSION
